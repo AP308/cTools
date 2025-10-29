@@ -115,6 +115,21 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 	if (!text_thickness) {
 		return;
 	};
+	if (!text_radius) {
+		return;
+	};
+
+	if (text_radius < 0) {
+		text_radius = 10;
+	};
+
+	if (text_spacing < 0) {
+		text_spacing = 5;
+	};
+
+	if (text_thickness < 0) {
+		text_thickness = .3;
+	};
 
 	if (1.0 * text_thickness * text_radius < 1) {
 		text_thickness = .2;
