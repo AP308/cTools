@@ -23,8 +23,12 @@ struct frameStruct {
 	int* pixels;
 };
 
+enum {
+	TEXT_CLIP = -1,
+	TEXT_WRAP
+};
 
-void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int text_xScale, int text_yScale, int color, float transparency);
+void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int text_radius, int text_spacing, float text_thickness, short text_structure, int text_color);
 
 void frame_DrawLine(struct frameStruct* frame, int x1, int y1, int x2, int y2, int color);
 
@@ -40,7 +44,7 @@ void frame_DrawRectA(struct frameStruct* frame, int xAnchor, int yAnchor, int ho
 
 void frame_DrawRectAFilled(struct frameStruct* frame, int xAnchor, int yAnchor, int horizontalShift, int verticalShift, int angle, int width, int height, int color);
 
-void frame_DrawCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int color, float transparency);
+void frame_DrawCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int color);
 
 void frame_DrawSemiCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int sliceAngle, int angle, int color, float transparency);
 
