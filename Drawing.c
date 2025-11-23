@@ -152,7 +152,7 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 	if (text_structure == TEXT_CLIP) {
 		iEnd = charsPerLine;
 	};
-	
+
 	for (int i = 0; i < iEnd; i++) {
 
 		int anchor1_x = x1 + (i % charsPerLine) * (text_radius * 2 + text_spacing);
@@ -194,13 +194,13 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 				if (!(chunk & segsWanted)) {	// check if currently drawing a wanted chunk
 					continue;
 				};
-				
+
 				// (y-h)^2 + (x-h)^2 = r^2
 				if (sqrt((x - anchor2_x) * (x - anchor2_x) + (y - anchor2_y) * (y - anchor2_y)) > text_radius) {
 					continue;
 				};
 
-				if (sqrt((x - anchor2_x) * (x - anchor2_x) + (y - anchor2_y) * (y - anchor2_y)) < ( text_radius - (text_thickness * text_radius) )) {
+				if (sqrt((x - anchor2_x) * (x - anchor2_x) + (y - anchor2_y) * (y - anchor2_y)) < (text_radius - (text_thickness * text_radius))) {
 					continue;
 				};
 
@@ -209,7 +209,7 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 			};
 
 		};
-		
+
 
 
 		for (int x = anchor2_x - text_radius; x < anchor2_x + text_radius; x++) {
@@ -271,7 +271,7 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 		if (segsWanted & (1 << 11)) {	// l4
 			frame_DrawRectFilled(frame, anchor1_x, anchor1_y + (text_radius * (3 - text_thickness)), anchor1_x + (text_radius * text_thickness), anchor1_y + (text_radius * (4 - text_thickness)), text_color, 0);
 		};
-		
+
 		if (segsWanted & (1 << 12)) {	// m1
 			frame_DrawRectFilled(frame, anchor1_x + (text_radius * (1 - (text_thickness / 2))), anchor1_y, anchor1_x + (text_radius * (1 + (text_thickness / 2))), anchor1_y + text_radius, text_color, 0);
 		};
@@ -297,7 +297,7 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 		if (segsWanted & (1 << 19)) {	// r4
 			frame_DrawRectFilled(frame, anchor1_x + (text_radius * 2) - (text_radius * text_thickness), anchor1_y + (text_radius * (3 - text_thickness)), anchor1_x + (text_radius * 2), anchor1_y + (text_radius * (4 - text_thickness)), text_color, 0);
 		};
-		
+
 		if (segsWanted & (1 << 20)) {	// hL1
 			frame_DrawRectFilled(frame, anchor1_x, anchor1_y, anchor1_x + text_radius + 1, anchor1_y + (text_radius * text_thickness), text_color, 0);
 		};
@@ -331,9 +331,9 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 
 		for (int i = 1; i < text_radius * 2 - 1; i++) {
 
-			short chunk = 
-					(i < text_radius) * 0x1
-				+	(i >= text_radius) * 0x2;
+			short chunk =
+				(i < text_radius) * 0x1
+				+ (i >= text_radius) * 0x2;
 
 			float dY = (text_radius * (4 - text_thickness)) / (text_radius * 2);
 
@@ -358,16 +358,16 @@ void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int 
 				if (y >= frame->height) {
 					continue;
 				};
-				
+
 				frame->pixels[y * frame->width + x] = text_color;
 			};
-			
+
 			chunk =
 				(i < text_radius) * 0x4
 				+ (i >= text_radius) * 0x8;
 
 			for (int iY = 0; iY < (int)(text_radius * text_thickness * 2); iY++) {
-				
+
 				if (!(segsWanted & (chunk << 28))) {
 					break;
 				};
@@ -647,15 +647,56 @@ void frame_DrawRectAFilled(struct frameStruct* frame, int xAnchor, int yAnchor, 
 };
 
 
+void frame_DrawCircle(struct frameStruct* frame, int x1, int y1, int radius, int color) {
+
+	if (color < 0) {
+		color = 0xffffff;
+	};
+
+	for (float x = x1 - radius; x < x1 + radius; x += .1) {
+
+		if (x < 0) {
+			continue;
+		};
+		if (x >= frame->width) {
+			continue;
+		};
+
+		int y = sqrt(radius*radius - (x - x1) * (x - x1)) + y1 - 1;
+
+		if (y >= 0 && y < frame->height) {
+			frame->pixels[(int)(y * frame->width + x)] = color;
+		};
+
+		y = -sqrt(radius * radius - (x - x1) * (x - x1)) + y1 + 1;
+
+		if (y < 0) {
+			continue;
+		};
+		if (y >= frame->height) {
+			continue;
+		};
+
+		frame->pixels[(int)(y * frame->width + x)] = color;
+
+	};
+
+	return;
+};
+
+
 void frame_DrawCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int color) {
 
 	if (color < 0) {
-		color = 0x00FFFFFF;
+		color = 0xffffff;
 	};
 
 	for (int x = x1 - radius; x < x1 + radius; x++) {
 
-		if (x < 0 || x >= frame->width) {
+		if (x < 0) {
+			continue;
+		};
+		if (x >= frame->width) {
 			continue;
 		};
 
