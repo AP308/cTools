@@ -44,6 +44,8 @@ void frame_DrawRectA(struct frameStruct* frame, int xAnchor, int yAnchor, int ho
 
 void frame_DrawRectAFilled(struct frameStruct* frame, int xAnchor, int yAnchor, int horizontalShift, int verticalShift, int angle, int width, int height, int color);
 
+void frame_DrawCircle(struct frameStruct* frame, int x1, int y1, int radius, int color);
+
 void frame_DrawCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int color);
 
 void frame_DrawSemiCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int sliceAngle, int angle, int color, float transparency);
