@@ -376,18 +376,36 @@ void text_AppendInt(char string[], int num) {
 }
 
 
-void text_AppendDouble(char string[], double num) {
+void text_AppendDouble(char string[], double num, int accuracy) {
 
 	if (num < 0) {
 		text_AppendChar(string, '-');
 		num *= -1;
 	};
 
-	//	num = (num);
-
 	text_AppendInt(string, num);
 	text_AppendChar(string, '.');
-	text_AppendInt(string, abs((num - (int)(num)) * 1000000));	// max accuracy of 6 decimals (.123456)
+
+	int dec = (num - (int)(num)) * 1000000;
+
+	if (accuracy > 5) {
+		accuracy = 5;
+	};
+	if (accuracy < 0) {
+		accuracy = 0;
+	};
+
+	for (int i = 5; i >= 6 - (accuracy); i--) {
+
+		int mult = 1;
+
+		for (int j = 0; j < i; j++) {
+			mult *= 10;
+		};
+
+		text_AppendInt(string, (int)(dec % (mult * 10) / (mult)));
+
+	};
 
 	return;
 }
