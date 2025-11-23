@@ -27,12 +27,11 @@ void text_AppendChar(char string1[], char char1);
 
 void text_AppendInt(char string[], int num);
 
-void text_AppendDouble(char string[], double num);
+void text_AppendDouble(char string[], double num, int accuracy);
 
 double NormalizeAngle(double angle);
 
 double DeltasToDegrees(double deltaX, double deltaY);
 
 int util_CollisionDist(int plrX, double plrY, double plrAngle, int x1, int y1, int x2, int y2, int* pX, int* pY);
-
 
