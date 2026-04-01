@@ -1,5 +1,4 @@
 
-
 #pragma once
 
 #define string_maxLength 128
@@ -28,7 +27,18 @@ enum {
 	TEXT_WRAP
 };
 
-void frame_DrawText(struct frameStruct* frame, int x1, int y1, char text[], int text_radius, int text_spacing, float text_thickness, short text_structure, int text_color);
+void frame_DrawChar(
+	struct frameStruct* frame,
+	char character,
+	int x1, int y1, int scale,
+	int* endx, int* endy,
+	int color);
+
+void frame_DrawTextRect(
+	struct frameStruct* frame,
+	char text[], int text_nChars,
+	int x1, int y1, int x2, int y2,
+	int color);
 
 void frame_DrawLine(struct frameStruct* frame, int x1, int y1, int x2, int y2, int color);
 
@@ -38,7 +48,7 @@ void frame_DrawLineA(struct frameStruct* frame, int x1, int y1, int dist, double
 
 void frame_DrawRect(struct frameStruct* frame, int x1, int y1, int x2, int y2, int color);
 
-void frame_DrawRectFilled(struct frameStruct* frame, int x1, int y1, int x2, int y2, int color, float transparency);
+void frame_DrawRectFilled(struct frameStruct* frame, int x1, int y1, int x2, int y2, int color);
 
 void frame_DrawRectA(struct frameStruct* frame, int xAnchor, int yAnchor, int horizontalShift, int verticalShift, double angle, int width, int height, int color);
 
@@ -51,3 +61,10 @@ void frame_DrawCircleFilled(struct frameStruct* frame, int x1, int y1, int radiu
 void frame_DrawSemiCircleFilled(struct frameStruct* frame, int x1, int y1, int radius, int sliceAngle, int angle, int color, float transparency);
 
 void frame_DrawTriangleFilled(struct frameStruct* frame, int x1, int y1, int x2, int y2, int x3, int y3, int color);
+
+void frame_DrawButton(
+	struct framestruct* frame,
+	int x1, int y1, int x2, int y2,
+	int roundingRadius,
+	int colorFill, int colorOutline
+	);
