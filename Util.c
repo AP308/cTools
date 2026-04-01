@@ -15,11 +15,11 @@ int num_CompareTolerance(double num1, double num2, double tol) {
 
 int text_Compare(char string1[], char string2[]) {
 
-	if (text_GetSize(string1) != text_GetSize(string2)) {
+	if (text_GetLen(string1, string_maxLength) != text_GetLen(string2, string_maxLength)) {
 		return 0;
 	};
 
-	int len = text_GetSize(string1);
+	int len = text_GetLen(string1, string_maxLength);
 
 	for (int i = 0; i < len; i++) {
 
@@ -32,37 +32,6 @@ int text_Compare(char string1[], char string2[]) {
 	return 1;
 };
 
-
-int text_CompareBulk(char string[], char stringList[]) {
-
-	char word[string_maxLength] = { 0 };
-
-	int lenWord = text_GetSize(stringList);
-
-	for (int w = 0; w < lenWord; w++) {
-
-		if (stringList[w] != ' ') {
-			text_AppendChar(word, stringList[w]);
-		};
-
-		if ((stringList[w] != ' ') && (w != lenWord - 1)) {
-			continue;
-		};
-
-		if (text_Compare(string, word)) {
-			return 1;
-		};
-
-		text_ClearString(word);
-
-
-	};
-
-
-	return 0;
-};
-
-
 void text_Shift(char string1[], int i, int n) {
 
 	if (n == 0) {
@@ -71,7 +40,7 @@ void text_Shift(char string1[], int i, int n) {
 
 	if (n < 0) {
 
-		int len = text_GetSize(string1);
+		int len = text_GetLen(string1, string_maxLength);
 
 		for (int l = i - n - 1; l < len - n + 1; l++) {
 
@@ -96,17 +65,17 @@ void text_Shift(char string1[], int i, int n) {
 }
 
 
-void text_ClearString(char string[]) {
+void text_ClearString(char text[], int text_maxLen) {
 
-	for (int i = 0; i < string_maxLength; i++) {
-		string[i] = 0;
+	for (int i = 0; i < text_maxLen; i++) {
+		text[i] = 0;
 	};
 
 	return;
 }
 
 
-int text_GetSize(char string[]) {
+int text_GetLen(char string[], int string_maxLen) {
 
 	for (int i = 0; i < string_maxLength; i++) {
 
@@ -266,72 +235,46 @@ double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 1234567
 };
 
 
-void text_AppendString(char string1[], char string2[]) {
+void text_AppendString(
+	char text1[], int text1_nChars,
+	char text2[], int text2_nChars
+	) {
+		
+	for (int i = 0; i < text2_nChars; i++) {
+		text1[text1_nChars + i] = text2[i];
+	};
 
-	if (string_maxLength < 0) {
+	return;
+}
+
+
+void text_AppendChar(char* text, int text_len, char character) {
+
+	int iEnd = -1;
+	for (int i = 0; i < text_len; i++) {
+
+		if (text[i] == 0) {
+			iEnd = i;
+			break;
+		};
+
+	};
+
+	if (iEnd > (text_len - 1)) {
 		return;
 	};
 
-	int iEnd = 0;
-	for (int i = 0; i < string_maxLength; i++) {
-
-		if (!string1[i]) {
-			iEnd = i;
-			break;
-		};
-
+	if (iEnd < 0) {
+		return;
 	};
 
-	if (string_maxLength <= 0) {
-		iEnd = 0;
-	};
-
-	for (int i = 0; i < string_maxLength; i++) {
-
-		if (string_maxLength == 1) {
-			string1[iEnd + i] = string2;
-			continue;
-		};
-
-		if (string2[i] == 0) {	//when string2 over
-			break;
-		};
-
-		string1[iEnd + i] = string2[i];
-
-	};
+	text[iEnd] = character;
 
 	return;
 }
 
 
-void text_AppendChar(char string1[], char char1) {
-
-	int iEnd = 0;
-	for (int i = 0; i < string_maxLength; i++) {
-
-		if (string1[i] == 0) {
-			iEnd = i;
-			break;
-		};
-
-	};
-
-	if (string_maxLength <= 0) {
-		iEnd = 0;
-	};
-
-	//if (iEnd >= string_maxLength - 1) {	// idk why, but can't append at last index
-		//return;
-	//};
-
-	string1[iEnd] = char1;
-
-	return;
-}
-
-
-void text_AppendInt(char string[], int num) {
+void text_AppendInt(char string[], int string_maxLen, int num) {
 
 	int iEnd = 0;
 	for (int i = 0; i < string_maxLength; i++) {
@@ -376,24 +319,24 @@ void text_AppendInt(char string[], int num) {
 }
 
 
-void text_AppendDouble(char string[], double num, int accuracy) {
-
-	if (num < 0) {
-		text_AppendChar(string, '-');
-		num *= -1;
-	};
-
-	text_AppendInt(string, num);
-	text_AppendChar(string, '.');
-
-	int dec = (num - (int)(num)) * 1000000;
+void text_AppendDouble(char* text, int text_len, double number, int accuracy) {
 
 	if (accuracy > 5) {
 		accuracy = 5;
 	};
 	if (accuracy < 0) {
-		accuracy = 0;
+		accuracy = 5;
 	};
+
+	if (number < 0) {
+		text_AppendChar(text, text_len, '-');
+		number *= -1;
+	};
+
+	text_AppendInt(text, text_len, (int)number);
+	text_AppendChar(text, text_len, '.');
+
+	int dec = (number - (int)(number)) * 1000000;
 
 	for (int i = 5; i >= 6 - (accuracy); i--) {
 
@@ -403,7 +346,10 @@ void text_AppendDouble(char string[], double num, int accuracy) {
 			mult *= 10;
 		};
 
-		text_AppendInt(string, (int)(dec % (mult * 10) / (mult)));
+		text_AppendInt(
+			text,
+			text_len,
+			(int)(dec % (mult * 10) / (mult)));
 
 	};
 
@@ -459,41 +405,147 @@ double DeltasToDegrees(double deltaX, double deltaY) {
 	return angle;
 }
 
-//					   plrX, plrY, plrAngle, 2nd line data is all the rest
-int util_CollisionDist(int plrX, double plrY, double plrAngle, int x1, int y1, int x2, int y2, int* pX, int* pY) {
+int util_SegmentSegmentIntersection(
+	double x1, double y1, double x2, double y2,
+	double x3, double y3, double x4, double y4,
+	int bind1, int bind2,
+	double* px, double* py
+) {
 
-	double deltaX1 = cos(plrAngle * 3.14 / 180);
-	double deltaY1 = sin(plrAngle * 3.14 / 180);
+	double dx1 = x2 - x1;
+	double dy1 = y2 - y1;
 
-	double deltaX2 = x2 - x1;
-	double deltaY2 = y2 - y1;
+	double dx2 = x4 - x3;
+	double dy2 = y4 - y3;
 
-	double v = (deltaX1 * (y1 - plrY) + (deltaY1) * (plrX - x1)) / ((deltaY1 * deltaX2) - (deltaX1 * deltaY2));
-
-	double u = x1 - 1 + (deltaX2 * v);
-
-	if (deltaX1 != 0) {
-		u = ((x1 - plrX) + (deltaX2 * v)) / (deltaX1);
+	if (!dx1 && !dy1) {
+		return 0;
+	};
+	if (!dx2 && !dy2) {
+		return 0;
 	};
 
-	double pointX = (int)(x1 + deltaX2 * v);
-	double pointY = (int)(y1 + deltaY2 * v);
+	double v = ((dx1) * (y3 - y1) + (dy1) * (x1 - x3));
 
-	if (((pointY < y1) == (pointY < y2)) && ((pointX < x1) == (pointX < x2))) {	// if outside of line
-		*pX = -1;
-		*pY = -1;
-		return -1;
+	if ((dy1 * dx2) - (dx1 * dy2)) {
+		v /= (1.0 * (dy1 * dx2) - (dx1 * dy2));
 	};
 
-	if ((u <= 0) || (v <= 0)) {
-		*pX = -1;
-		*pY = -1;
-		return -1;
-		// return -1;
+	double u = ((x3 - x1) + (dx2 * v));
+
+	if (dx1) {
+		u /= (1.0 * dx1);
 	};
 
-	*pX = (int)(pointX);
-	*pY = (int)(pointY);
+	if (u > 1.0 && bind1) {
+		return 0;
+	};
+	if (v > 1.0 && bind2) {
+		return 0;
+	};
+	if (u < 0) {
+		return 0;
+	};
+	if (v < 0) {
+		return 0;
+	};
 
-	//return (sqrt(((pointX - plrX) * (pointX - plrX)) + ((pointY - plrY) * (pointY - plrY))));
+	double collision_x = x3 + dx2 * v;
+	double collision_y = y3 + dy2 * v;
+
+	if (((collision_y < y1) == (collision_y < y2)) && ((collision_x < x1) == (collision_x < x2)) && bind1) {
+		//return 0;
+	};
+	if (((collision_y < y3) == (collision_y < y4)) && ((collision_x < x3) == (collision_x < x3)) && bind2) {
+		//return 0;
+	};
+
+	*px = collision_x;
+	*py = collision_y;
+
+	return 1;
+
 };
+
+char util_SegmentCircleIntersection(
+	double x1, double y1, double x2, double y2,
+	double h, double k, double radius,
+	int bind1,
+	double* px1, double* py1,
+	double* px2, double* py2
+) {
+
+	double a = x2 - x1;
+	double b = x1 - h;
+	double c = y2 - y1;
+	double d = y1 - k;
+	double e = radius * radius;
+
+	double q_a = a * a + c * c;
+
+	if (!q_a) {
+		return 0;
+	};
+
+	double q_b = 2 * a * b + 2 * c * d;
+	double q_c = b * b + d * d - e;
+
+	double chunk = q_b * q_b - 4 * q_a * q_c;
+
+	if (chunk < 0) {
+		return 0;
+	};
+
+	chunk = sqrt(chunk);
+
+	double u = (-q_b - chunk) / (2 * q_a);
+
+	if (u <= 0) {
+		return 0;
+	};
+
+	if (u > 1 && bind1) {
+		return 0;
+	};
+
+	if (px1 && py1) {
+		*px1 = x1 + a * u;
+		*py1 = y1 + c * u;
+	};
+
+	u = (-q_b + chunk) / (2 * q_a);
+
+	if (u <= 0) {
+		return (1 << 4);
+	};
+
+	if (u > 1 && bind1) {
+		return (1 << 4);
+	};
+
+	if (px2 && py2) {
+		*px2 = x1 + a * u;
+		*py2 = y1 + c * u;
+	};
+
+	return ((1 << 4) + (1 << 0));
+
+};
+
+/* orbit 2 centers??
+* 	double a = x2 - x1;
+	double b = x1 - x3;
+	double c = y2 - y1;
+	double d = y1 - y3;
+	double e = radius * radius;
+
+	double q_a = a * a + c * c;
+	double q_b = 2 * a * b + 2 * c * d;
+	double q_c = e - b * b - c * c;
+
+	double chunk = sqrt(q_b * q_b - 4 * q_a * q_c);
+
+	double u = (-q_b + chunk) / (2 * q_a);
+
+	*px1 = x1 + a * u;
+	*py1 = y1 + c * u;*/
