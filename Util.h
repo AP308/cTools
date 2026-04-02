@@ -1,43 +1,40 @@
-#pragma once
-#include <Math.h>
 
-// contains functions for string manipulation
+#pragma once
 
 #define string_maxLength 128
 
 #define util_HIWORD(num) ((num >> 8) & (0xff))
-#define util_LOWORD(num) ((num) & (0xff))
+#define util_LOWORD(num) ((num)		 & (0xff))
 
-int num_CompareTolerance(double num1, double num2, double tol);
+void text_ClearString(char* pString, int string_cBuffer);
 
-int text_Compare(char string1[], char string2[]);
+int text_GetLen(char* pString, int string_cBuffer);
 
-int text_CompareBulk(char string[], char stringList[]);	// compare 1 string with list of strings (ex. text_CompareBulk("dog", "tree dog house") would return true)
+int text_StringToInt(char* pString, int string_cBuffer);
 
-void text_Shift(char string1[], int i, int n);	// shifts text at pos 'i' by 'n' amount (n may be < 0)
+double text_StringToDouble(char* pString, int string_cBuffer);
 
-void text_ClearString(char text[], int text_maxLen);
-
-int text_GetLen(char string[], int string_maxLen);
-
-int text_StringToInt(char string[]);
-
-double text_StringToDouble(char string[]);
+void text_AppendChar(
+	char* pString, int string_cBuffer,
+	char character
+);
 
 void text_AppendString(
-	char text1[], int text1_nChars,
-	char text2[], int text2_nChars
-	);
+	char* pString1, int string1_cBuffer,
+	char* pString2, int string2_cBuffer
+);
 
-void text_AppendChar(char* text, int text_len, char character);
+void text_AppendInt(
+	char* pString, int string_cBuffer,
+	int num
+);
 
-void text_AppendInt(char string[], int string_maxLen, int num);
-
-void text_AppendDouble(char* text, int text_len, double number, int accuracy);
+void text_AppendDouble(
+	char* pString, int string_cBuffer,
+	double number, int accuracy
+);
 
 double NormalizeAngle(double angle);
-
-double DeltasToDegrees(double deltaX, double deltaY);
 
 int util_SegmentSegmentIntersection(
 	double x1, double y1, double x2, double y2,
