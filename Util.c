@@ -1,95 +1,34 @@
 
+#ifndef UTIL_C
+#define UTIL_C
 
 #include "Util.h"
 
-int num_CompareTolerance(double num1, double num2, double tol) {
+#include <Math.h>
 
+void text_ClearString(char* pString, int string_cBuffer) {
 
-	if (num1 < (num2 - tol) != num1 < (num2 + tol)) {
-		return 1;
-	};
-
-	return 0;
-};
-
-
-int text_Compare(char string1[], char string2[]) {
-
-	if (text_GetLen(string1, string_maxLength) != text_GetLen(string2, string_maxLength)) {
-		return 0;
-	};
-
-	int len = text_GetLen(string1, string_maxLength);
-
-	for (int i = 0; i < len; i++) {
-
-		if (string1[i] != string2[i]) {
-			return 0;
-		};
-
-	};
-
-	return 1;
-};
-
-void text_Shift(char string1[], int i, int n) {
-
-	if (n == 0) {
-		return;
-	};
-
-	if (n < 0) {
-
-		int len = text_GetLen(string1, string_maxLength);
-
-		for (int l = i - n - 1; l < len - n + 1; l++) {
-
-			string1[l + n + 1] = string1[l + 1];
-			//l--;
-
-		};
-
-		//string1[len - 1] = 0;
-		//string1[len - 2] = 0;
-		return;
-
-	};
-
-	for (int l = string_maxLength - n - 2; l >= i; l--) {
-		string1[l + n] = string1[l];
-		string1[l] = ' ';
-	};
-
-	return;
-
-}
-
-
-void text_ClearString(char text[], int text_maxLen) {
-
-	for (int i = 0; i < text_maxLen; i++) {
-		text[i] = 0;
+	for (int i = 0; i < string_cBuffer; i++) {
+		pString[i] = 0;
 	};
 
 	return;
 }
 
+int text_GetLen(char* pString, int string_cBuffer) {
 
-int text_GetLen(char string[], int string_maxLen) {
+	for (int i = 0; i < string_cBuffer; i++) {
 
-	for (int i = 0; i < string_maxLength; i++) {
-
-		if (string[i] == 0) {
+		if (pString[i] == 0) {
 			return i;
 		};
 
 	};
 
-	return (0);
+	return string_cBuffer;
 }
 
-
-int text_StringToInt(char string[]) {	// up to 9 digits
+int text_StringToInt(char* pString, int string_cBuffer) {	// up to 9 digits
 
 	int nDigits = 0;
 
@@ -99,23 +38,20 @@ int text_StringToInt(char string[]) {	// up to 9 digits
 			break;
 		};
 
-		if (string[i] == 0) {
+		if (pString[i] == 0) {
 			break;
 		};
 
-		if (string[i] == '-' && i == 0) {
+		if (pString[i] == '-' && i == 0) {
 			continue;
 		};
 
-		if (string[i] < '0' || string[i] > '9') {
+		if (pString[i] < '0' || pString[i] > '9') {
 			break;
 		};
 
-
 		nDigits++;
-
 	};
-
 
 	int num = 0;
 	int iDigit = 0;
@@ -126,15 +62,15 @@ int text_StringToInt(char string[]) {	// up to 9 digits
 			break;
 		};
 
-		if (string[i] == 0) {
+		if (pString[i] == 0) {
 			break;
 		};
 
-		if (string[i] < '0' || string[i] > '9') {
+		if (pString[i] < '0' || pString[i] > '9') {
 			continue;
 		};
 
-		int digit = (int)(string[i] - '0');
+		int digit = (int)(pString[i] - '0');
 
 		for (int n = 0; n < (nDigits - iDigit - 1); n++) {
 
@@ -147,29 +83,28 @@ int text_StringToInt(char string[]) {	// up to 9 digits
 
 	};
 
-	if (string[0] == '-') {
+	if (pString[0] == '-') {
 		num *= -1;
 	};
 
 	return num;
 };
 
-
-double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 123456789.123456
+double text_StringToDouble(char* pString, int string_cBuffer) {	// up to 6 decimal points
 
 	double num = 0;
 
 	int iPoint = -1;
 	for (int i = 0; i < string_maxLength; i++) {
 
-		if (string[i] == '.') {
+		if (pString[i] == '.') {
 			iPoint = i;
 			break;
 		};
 
 	};
 
-	num += text_StringToInt(string);
+	num += text_StringToInt(pString, string_cBuffer);
 
 	if (num < 0) {
 		num *= -1;
@@ -179,9 +114,6 @@ double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 1234567
 		return num;
 	};
 
-
-
-
 	int nDigits = 0;
 
 	for (int i = iPoint + 1; i < string_maxLength; i++) {
@@ -190,7 +122,7 @@ double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 1234567
 			break;
 		};
 
-		if (string[i] < '0' || string[i] > '9') {
+		if (pString[i] < '0' || pString[i] > '9') {
 			break;
 		};
 
@@ -206,15 +138,15 @@ double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 1234567
 			break;
 		};
 
-		if (string[i] == 0) {
+		if (pString[i] == 0) {
 			break;
 		};
 
-		if (string[i] < '0' || string[i] > '9') {
+		if (pString[i] < '0' || pString[i] > '9') {
 			continue;
 		};
 
-		double digit = (int)(string[i] - '0');
+		double digit = (int)(pString[i] - '0');
 
 		for (int n = 0; n < iDigit + 1; n++) {
 
@@ -227,59 +159,57 @@ double text_StringToDouble(char string[]) {	// up to 6 decimal points	// 1234567
 
 	};
 
-	if (string[0] == '-') {
+	if (pString[0] == '-') {
 		num *= -1;
 	};
 
 	return num;
 };
 
+void text_AppendChar(
+	char* pString, int string_cBuffer,
+	char character
+) {
 
-void text_AppendString(
-	char text1[], int text1_nChars,
-	char text2[], int text2_nChars
-	) {
-		
-	for (int i = 0; i < text2_nChars; i++) {
-		text1[text1_nChars + i] = text2[i];
-	};
-
-	return;
-}
-
-
-void text_AppendChar(char* text, int text_len, char character) {
-
-	int iEnd = -1;
-	for (int i = 0; i < text_len; i++) {
-
-		if (text[i] == 0) {
-			iEnd = i;
-			break;
-		};
-
-	};
-
-	if (iEnd > (text_len - 1)) {
-		return;
-	};
+	int iEnd = text_GetLen(pString, string_cBuffer);
 
 	if (iEnd < 0) {
 		return;
 	};
+	
+	if (iEnd >= string_cBuffer) {
+		return;
+	};
 
-	text[iEnd] = character;
+	pString[iEnd] = character;
 
 	return;
 }
 
+void text_AppendString(
+	char* pString1, int string1_cBuffer,
+	char* pString2, int string2_cBuffer
+) {
 
-void text_AppendInt(char string[], int string_maxLen, int num) {
+	int iEnd1 = text_GetLen(pString1, string1_cBuffer);
+	int iEnd2 = text_GetLen(pString2, string2_cBuffer);
+
+	for (int i = 0; i < iEnd2; i++) {
+		pString1[iEnd1 + i] = pString2[i];
+	};
+
+	return;
+}
+
+void text_AppendInt(
+	char* pString, int string_cBuffer,
+	int num
+) {
 
 	int iEnd = 0;
 	for (int i = 0; i < string_maxLength; i++) {
 
-		if (!string[i]) {
+		if (!pString[i]) {
 			iEnd = i;
 			break;
 		};
@@ -287,7 +217,7 @@ void text_AppendInt(char string[], int string_maxLen, int num) {
 	};
 
 	if (num == 0) {
-		string[iEnd] = '0';
+		pString[iEnd] = '0';
 		return;
 	};
 
@@ -302,7 +232,7 @@ void text_AppendInt(char string[], int string_maxLen, int num) {
 	};
 
 	if (num < 0) {
-		string[iEnd] = '-';
+		pString[iEnd] = '-';
 		iEnd++;
 	};
 
@@ -310,7 +240,7 @@ void text_AppendInt(char string[], int string_maxLen, int num) {
 
 	for (int i = num_length - 1; i >= 0; i--) {
 
-		string[iEnd + i] = (char)(num % 10 + 48);
+		pString[iEnd + i] = (char)(num % 10 + 48);
 
 		num /= 10;
 	};
@@ -318,8 +248,10 @@ void text_AppendInt(char string[], int string_maxLen, int num) {
 	return;
 }
 
-
-void text_AppendDouble(char* text, int text_len, double number, int accuracy) {
+void text_AppendDouble(
+	char* pString, int string_cBuffer,
+	double number, int accuracy
+) {
 
 	if (accuracy > 5) {
 		accuracy = 5;
@@ -329,12 +261,12 @@ void text_AppendDouble(char* text, int text_len, double number, int accuracy) {
 	};
 
 	if (number < 0) {
-		text_AppendChar(text, text_len, '-');
+		text_AppendChar(pString, string_cBuffer, '-');
 		number *= -1;
 	};
 
-	text_AppendInt(text, text_len, (int)number);
-	text_AppendChar(text, text_len, '.');
+	text_AppendInt(pString, string_cBuffer, (int)number);
+	text_AppendChar(pString, string_cBuffer, '.');
 
 	int dec = (number - (int)(number)) * 1000000;
 
@@ -347,8 +279,8 @@ void text_AppendDouble(char* text, int text_len, double number, int accuracy) {
 		};
 
 		text_AppendInt(
-			text,
-			text_len,
+			pString,
+			string_cBuffer,
 			(int)(dec % (mult * 10) / (mult)));
 
 	};
@@ -365,41 +297,6 @@ double NormalizeAngle(double angle) {
 
 	while (angle < 0) {
 		angle += 360;
-	};
-
-	return angle;
-}
-
-
-double DeltasToDegrees(double deltaX, double deltaY) {
-
-	if (deltaX == 0 && deltaY == 0) {
-		return -1;
-	};
-
-	if (deltaY == 0 && deltaX > 0) {
-		return 0;
-	};
-
-	if (deltaY == 0 && deltaX < 0) {
-		return 180;
-	};
-
-	if (deltaX == 0 && deltaY > 0) {
-		return 90;
-	};
-
-	if (deltaX == 0 && deltaY < 0) {
-		return 270;
-	};
-
-	double angle = atan(deltaY / deltaX) * 180 / 3.14;
-	if (deltaX < 0 && deltaY < 0) {	//Quadrant III
-		return angle + 180;
-	};
-
-	if (deltaX < 0 && deltaY > 0) {	//Quadrant I
-		return angle + 180;
 	};
 
 	return angle;
@@ -549,3 +446,5 @@ char util_SegmentCircleIntersection(
 
 	*px1 = x1 + a * u;
 	*py1 = y1 + c * u;*/
+
+#endif
