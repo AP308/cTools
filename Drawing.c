@@ -274,7 +274,7 @@ short char_sizes[bitmap_nChars] = {
 	(5 << 8) + (9 << 0), // DEL
 };
 
-void frame_DrawChar(
+void Draw_Char(
 	int* pPixels, int cx, int cy,
 	char character,
 	int x1, int y1, int scale,
@@ -354,7 +354,7 @@ void frame_DrawChar(
 	return;
 };
 
-void frame_DrawTextRect(
+void Draw_TextRect(
 	int* pPixels, int cx, int cy,
 	char* pString, int string_cBuffer,
 	int x1, int y1, int x2, int y2,
@@ -390,7 +390,7 @@ void frame_DrawTextRect(
 			break;
 		};
 
-		frame_DrawChar(
+		Draw_Char(
 			pPixels, cx, cy,
 			pString[i],
 			endX, endY, scale,
@@ -404,7 +404,7 @@ void frame_DrawTextRect(
 
 };
 
-void frame_DrawLine(
+void Draw_Line(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int x2, int y2,
 	int color
@@ -451,29 +451,78 @@ void frame_DrawLine(
 	return;
 }
 
-void frame_DrawLineA(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int dist, double angle, int color) {
+void Draw_LineDouble(
+	int* pPixels, int cx, int cy,
+	double x1, double y1, double x2, double y2,
+	int color
+) {
+
+	if (color <= 0) {
+		color = 0xffffff;
+	};
+
+	double dx = x2 - x1;
+	double dy = y2 - y1;
+
+	int len = abs(dx);
+
+	if (abs(dy) > abs(dx)) {
+		len = abs(dy);
+	};
+
+	len = 1000;
+
+	for (int i = 0; i < len; i++) {
+
+		double t = 1.0 * i / len;
+
+		int x = (int)(x1 + dx * t + .5);
+		int y = (int)(y1 + dy * t + .5);
+
+		if (x < 0) {
+			continue;
+		};
+		if (x >= cx) {
+			continue;
+		};
+		if (y < 0) {
+			continue;
+		};
+		if (y >= cy) {
+			continue;
+		};
+
+		pPixels[y * cx + x] = color;
+
+	};
+
+
+	return;
+}
+
+void Draw_LineA(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int dist, double angle, int color) {
 
 	int deltaX = dist * cos(angle * 3.14 / 180);
 	int deltaY = dist * sin(angle * 3.14 / 180);
 
-	frame_DrawLine(pixels, pixWidth, pixHeight, x1, y1, x1 + deltaX, y1 + deltaY, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x1, y1, x1 + deltaX, y1 + deltaY, color);
 
 	return;
 }
 
 
-void frame_DrawRect(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int x2, int y2, int color) {
+void Draw_Rect(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int x2, int y2, int color) {
 
-	frame_DrawLine(pixels, pixWidth, pixHeight, x1, y1, x2, y1, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x2, y1, x2, y2, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x2, y2, x1, y2, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x1, y1, x1, y2, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x1, y1, x2, y1, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x2, y1, x2, y2, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x2, y2, x1, y2, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x1, y1, x1, y2, color);
 
 	return;
 }
 
 
-void frame_DrawRectFilled(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int x2, int y2, int color) {
+void Draw_RectFilled(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int x2, int y2, int color) {
 
 	if (color < 0) {
 		color = 0x00FFFFFF;
@@ -512,7 +561,7 @@ void frame_DrawRectFilled(int* pixels, int pixWidth, int pixHeight, int x1, int 
 	return;
 };
 
-void frame_DrawRectA(int* pixels, int pixWidth, int pixHeight, int xAnchor, int yAnchor, int horizontalShift, int verticalShift, double angle, int width, int height, int color) {
+void Draw_RectA(int* pixels, int pixWidth, int pixHeight, int xAnchor, int yAnchor, int horizontalShift, int verticalShift, double angle, int width, int height, int color) {
 
 	int x1 = xAnchor + horizontalShift * cos((angle - 90) * 3.14 / 180) + verticalShift * cos(angle * 3.14 / 180);
 	int y1 = yAnchor + horizontalShift * sin((angle - 90) * 3.14 / 180) + verticalShift * sin(angle * 3.14 / 180);
@@ -526,15 +575,15 @@ void frame_DrawRectA(int* pixels, int pixWidth, int pixHeight, int xAnchor, int 
 	int x3 = x1 + height * cos(angle * 3.14 / 180) + width * cos((angle - 90) * 3.14 / 180);
 	int y3 = y1 + height * sin(angle * 3.14 / 180) + width * sin((angle - 90) * 3.14 / 180);
 
-	frame_DrawLine(pixels, pixWidth, pixHeight, x1, y1, x2, y2, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x2, y2, x3, y3, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x3, y3, x4, y4, color);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x4, y4, x1, y1, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x1, y1, x2, y2, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x2, y2, x3, y3, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x3, y3, x4, y4, color);
+	Draw_Line(pixels, pixWidth, pixHeight, x4, y4, x1, y1, color);
 
 	return;
 };
 
-void frame_DrawCircle(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int radius, int color) {
+void Draw_Circle(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int radius, int color) {
 
 	if (color < 0) {
 		color = 0xffffff;
@@ -572,7 +621,7 @@ void frame_DrawCircle(int* pixels, int pixWidth, int pixHeight, int x1, int y1, 
 };
 
 
-void frame_DrawCircleFilled(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int radius, int color) {
+void Draw_CircleFilled(int* pixels, int pixWidth, int pixHeight, int x1, int y1, int radius, int color) {
 
 	if (color < 0) {
 		color = 0xffffff;
@@ -606,7 +655,7 @@ void frame_DrawCircleFilled(int* pixels, int pixWidth, int pixHeight, int x1, in
 	return;
 }
 
-void frame_DrawButton(
+void Draw_Button(
 	int* pixels, int pixWidth, int pixHeight,
 	int x1, int y1, int x2, int y2,
 	int roundingRadius,
@@ -625,24 +674,24 @@ void frame_DrawButton(
 	int circleX4 = x1 + roundingRadius;
 	int circleY4 = y2 + roundingRadius;
 
-	frame_DrawCircleFilled(pixels, pixWidth, pixHeight, circleX1, circleY1, roundingRadius, colorFill);
-	frame_DrawCircleFilled(pixels, pixWidth, pixHeight, circleX2, circleY2, roundingRadius, colorFill);
-	frame_DrawCircleFilled(pixels, pixWidth, pixHeight, circleX3, circleY3, roundingRadius, colorFill);
-	frame_DrawCircleFilled(pixels, pixWidth, pixHeight, circleX4, circleY4, roundingRadius, colorFill);
+	Draw_CircleFilled(pixels, pixWidth, pixHeight, circleX1, circleY1, roundingRadius, colorFill);
+	Draw_CircleFilled(pixels, pixWidth, pixHeight, circleX2, circleY2, roundingRadius, colorFill);
+	Draw_CircleFilled(pixels, pixWidth, pixHeight, circleX3, circleY3, roundingRadius, colorFill);
+	Draw_CircleFilled(pixels, pixWidth, pixHeight, circleX4, circleY4, roundingRadius, colorFill);
 
-	frame_DrawCircle(pixels, pixWidth, pixHeight, circleX1, circleY1, roundingRadius, colorOutline);
-	frame_DrawCircle(pixels, pixWidth, pixHeight, circleX2, circleY2, roundingRadius, colorOutline);
-	frame_DrawCircle(pixels, pixWidth, pixHeight, circleX3, circleY3, roundingRadius, colorOutline);
-	frame_DrawCircle(pixels, pixWidth, pixHeight, circleX4, circleY4, roundingRadius, colorOutline);
+	Draw_Circle(pixels, pixWidth, pixHeight, circleX1, circleY1, roundingRadius, colorOutline);
+	Draw_Circle(pixels, pixWidth, pixHeight, circleX2, circleY2, roundingRadius, colorOutline);
+	Draw_Circle(pixels, pixWidth, pixHeight, circleX3, circleY3, roundingRadius, colorOutline);
+	Draw_Circle(pixels, pixWidth, pixHeight, circleX4, circleY4, roundingRadius, colorOutline);
 
-	frame_DrawRectFilled(pixels, pixWidth, pixHeight, x1, circleY1, x2, circleY3, colorFill);
-	frame_DrawRectFilled(pixels, pixWidth, pixHeight, circleX1, y1, circleX2, circleY1, colorFill);
-	frame_DrawRectFilled(pixels, pixWidth, pixHeight, circleX1, circleY3, circleX2, y2, colorFill);
+	Draw_RectFilled(pixels, pixWidth, pixHeight, x1, circleY1, x2, circleY3, colorFill);
+	Draw_RectFilled(pixels, pixWidth, pixHeight, circleX1, y1, circleX2, circleY1, colorFill);
+	Draw_RectFilled(pixels, pixWidth, pixHeight, circleX1, circleY3, circleX2, y2, colorFill);
 
-	frame_DrawLine(pixels, pixWidth, pixHeight, circleX1, y1 - 1, circleX2, y1 - 1, colorOutline);
-	frame_DrawLine(pixels, pixWidth, pixHeight, circleX1, y2, circleX2, y2, colorOutline);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x1, circleY3, x1, circleY1, colorOutline);
-	frame_DrawLine(pixels, pixWidth, pixHeight, x2 - 1, circleY3, x2 - 1, circleY1, colorOutline);
+	Draw_Line(pixels, pixWidth, pixHeight, circleX1, y1 - 1, circleX2, y1 - 1, colorOutline);
+	Draw_Line(pixels, pixWidth, pixHeight, circleX1, y2, circleX2, y2, colorOutline);
+	Draw_Line(pixels, pixWidth, pixHeight, x1, circleY3, x1, circleY1, colorOutline);
+	Draw_Line(pixels, pixWidth, pixHeight, x2 - 1, circleY3, x2 - 1, circleY1, colorOutline);
 
 	return;
 };
