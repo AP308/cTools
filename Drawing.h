@@ -14,7 +14,7 @@
 (int)(RGB_GetB(color1) * (amount / 100.0) + RGB_GetB(color2) * (1 - amount / 100.0))\
 )
 
-void frame_DrawChar(
+void Draw_Char(
 	int* pPixels, int cx, int cy,
 	char character,
 	int x1, int y1, int scale,
@@ -22,56 +22,62 @@ void frame_DrawChar(
 	int color
 );
 
-void frame_DrawTextRect(
+void Draw_TextRect(
 	int* pPixels, int cx, int cy,
 	char* pString, int string_cBuffer,
 	int x1, int y1, int x2, int y2,
 	int color
 );
 
-void frame_DrawLine(
+void Draw_Line(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int x2, int y2,
 	int color
 );
 
-void frame_DrawLineA(
+void Draw_LineDouble(
+	int* pPixels, int cx, int cy,
+	double x1, double y1, double x2, double y2,
+	int color
+);
+
+void Draw_LineA(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int dist, double angle,
 	int color
 );
 
-void frame_DrawRect(
+void Draw_Rect(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int x2, int y2,
 	int color
 );
 
-void frame_DrawRectFilled(
+void Draw_RectFilled(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int x2, int y2,
 	int color
 );
 
-void frame_DrawRectA(
+void Draw_RectA(
 	int* pPixels, int cx, int cy,
 	int xAnchor, int yAnchor, int horizontalShift, int verticalShift, double angle, int width, int height,
 	int color
 );
 
-void frame_DrawCircle(
+void Draw_Circle(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int radius,
 	int color
 );
 
-void frame_DrawCircleFilled(
+void Draw_CircleFilled(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int radius,
 	int color
 );
 
-void frame_DrawButton(
+void Draw_Button(
 	int* pPixels, int cx, int cy,
 	int x1, int y1, int x2, int y2,
 	int roundingRadius,
